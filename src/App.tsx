@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
+import { track } from "@vercel/analytics";
 import type { Config, Dados, Semana, TipoLanc } from "./lib/types";
 import { MESES, addDays, brl, diaIdx, keyOf, mondayOf, novoId, parseValor } from "./lib/format";
 import { carregar, defaultWeek, pedirPersistencia, salvar } from "./lib/storage";
@@ -11,6 +13,8 @@ import { Blocos, Lancamentos, Lancar, Mes, Taximetro, Trajeto } from "./componen
 // Versão genérica para motoristas que vivem do volante.
 // Metas semanais diretas, trajeto opcional e blocos de pico
 // configuráveis para qualquer dia da semana.
+
+const FEEDBACK_URL = `https://wa.me/FEEDBACK_PHONE_REMOVIDO?text=${encodeURIComponent("Feedback Apurado:")}`;
 
 export default function App() {
   const [data, setData] = useState<Dados>(carregar);
@@ -59,12 +63,17 @@ export default function App() {
 
   const toggleDia = (campo: "ida" | "volta", i: number) => setWeek({ ...week, [campo]: week[campo].map((v, j) => (j === i ? !v : v)) });
 
-  const toggleBloco = (id: string) => setWeek({ ...week, blocos: { ...week.blocos, [id]: !week.blocos[id] } });
+  const toggleBloco = (id: string) => {
+    const marcado = !week.blocos[id];
+    setWeek({ ...week, blocos: { ...week.blocos, [id]: marcado } });
+    if (marcado) track("turno_planejado");
+  };
 
   const addLanc = (tipo: TipoLanc, raw: string) => {
     const v = parseValor(raw);
     if (!Number.isFinite(v) || v <= 0) return false;
     setWeek({ ...week, lanc: [...week.lanc, { id: novoId(), tipo, valor: v, ts: Date.now() }] });
+    track(tipo === "entrada" ? "ganho_registrado" : "combustivel_registrado");
     return true;
   };
 
@@ -144,7 +153,18 @@ export default function App() {
         <div className="text-xs text-center px-4" style={{ color: C.dim }}>
           Líquido = corridas lançadas − combustível lançado. Bateu {brl(cfg.metaSemanal)} na semana, o mês anda sozinho.
         </div>
+
+        <a
+          href={FEEDBACK_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="self-center font-mono text-xs px-3 py-2 rounded-lg active:scale-95 transition-all"
+          style={{ border: `1px solid ${C.line}`, color: C.dim }}
+        >
+          Mandar feedback
+        </a>
       </div>
+      <Analytics />
     </div>
   );
 }
