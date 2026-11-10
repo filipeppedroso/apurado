@@ -7,6 +7,7 @@ import { carregar, defaultWeek, pedirPersistencia, salvar } from "./lib/storage"
 import { C } from "./theme";
 import Ajustes from "./components/Ajustes";
 import Backup from "./components/Backup";
+import BackupArquivo from "./components/BackupArquivo";
 import { Blocos, Lancamentos, Lancar, Mes, Taximetro, Trajeto } from "./components/Painel";
 
 // ── Apurado · painel do motorista de app (v2) ───────────────────
@@ -114,6 +115,7 @@ export default function App() {
         )}
 
         {showCfg && <Ajustes cfg={cfg} onAplicar={aplicarCfg} />}
+        {showCfg && <BackupArquivo data={data} onImportar={persist} />}
 
         {/* Navegação de semana */}
         <div className="flex items-center justify-between">
