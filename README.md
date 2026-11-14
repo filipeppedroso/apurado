@@ -6,6 +6,8 @@ fare and every fuel stop, and the app shows what is actually left.
 Mobile-first PWA: installable, works offline, and every record stays on the device.
 No account, no server, no personal data leaving the phone.
 
+**Live app:** https://apurado.vercel.app
+
 ## Why it exists
 
 The drivers I know track earnings on paper or in a notes app, and they track gross.
