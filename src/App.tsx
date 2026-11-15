@@ -15,7 +15,12 @@ import { Blocos, Lancamentos, Lancar, Mes, Taximetro, Trajeto } from "./componen
 // Metas semanais diretas, trajeto opcional e blocos de pico
 // configuráveis para qualquer dia da semana.
 
-const FEEDBACK_URL = `https://wa.me/FEEDBACK_PHONE_REMOVIDO?text=${encodeURIComponent("Feedback Apurado:")}`;
+// O numero de contato nao fica no codigo. Defina VITE_FEEDBACK_PHONE no
+// ambiente de build (Vercel). Sem a variavel, o botao abre as issues do repo.
+const FEEDBACK_PHONE = import.meta.env.VITE_FEEDBACK_PHONE;
+const FEEDBACK_URL = FEEDBACK_PHONE
+  ? `https://wa.me/${FEEDBACK_PHONE}?text=${encodeURIComponent("Feedback Apurado:")}`
+  : "https://github.com/filipeppedroso/apurado/issues";
 
 export default function App() {
   const [data, setData] = useState<Dados>(carregar);
